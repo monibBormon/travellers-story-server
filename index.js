@@ -42,7 +42,46 @@ async function run() {
             const result = await blogsCollection.findOne({ _id: ObjectId(id) })
             res.json(result)
         })
+        // get all blogs for admin 
+        app.get('/all-blogs', async (req, res) => {
+            const result = await blogsCollection.find({}).toArray()
+            res.json(result)
+        })
 
+        // update orders status
+        app.put('/updateStatus/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await blogsCollection.updateOne({ _id: ObjectId(id) }, {
+                $set: {
+                    status: 'approve',
+                }
+            })
+            res.json(result);
+        })
+        app.put('/updateStatus1/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await blogsCollection.updateOne({ _id: ObjectId(id) }, {
+                $set: {
+                    status: 'pending',
+                }
+            })
+            res.json(result);
+        })
+
+        // delete product from db
+        app.delete('/delete/:id', async (req, res) => {
+            const result = await blogsCollection.deleteOne({ _id: ObjectId(req.params.id) })
+            res.json(result)
+        })
+
+        // get single email ordered product
+        app.get('/myBlogs', async (req, res) => {
+            const email = req.query.email
+            const query = { email: email }
+            const cursor = blogsCollection.find(query)
+            const result = await cursor.toArray()
+            res.json(result)
+        })
 
 
         // add user to db
