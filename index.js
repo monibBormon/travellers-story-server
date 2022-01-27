@@ -23,12 +23,23 @@ async function run() {
         const userCollection = client.db('travellersStory').collection('users')
 
 
+        // post blog
+        app.post('/blogs', async (req, res) => {
+            const result = await blogsCollection.insertOne(req.body)
+            res.json(result)
+        })
         // get blogs with approve query
         app.get('/blogs', async (req, res) => {
             const status = req.query.status;
             const query = { status: status }
             const cursor = blogsCollection.find(query)
             const result = await cursor.toArray()
+            res.json(result)
+        })
+        // get single blog
+        app.get('/blogs/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await blogsCollection.findOne({ _id: ObjectId(id) })
             res.json(result)
         })
 
