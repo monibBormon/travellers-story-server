@@ -28,13 +28,20 @@ async function run() {
             const result = await blogsCollection.insertOne(req.body)
             res.json(result)
         })
-        // get blogs with approve query
+        // get blogs with approve query with pagination
         app.get('/blogs', async (req, res) => {
             const status = req.query.status;
             const query = { status: status }
-            const cursor = blogsCollection.find(query)
-            const result = await cursor.toArray()
-            res.json(result)
+            const page = req.query.page
+            const size = parseInt(req.query.size);
+            let result;
+            const count = await blogsCollection.find(query).count()
+            if (page) {
+                result = await blogsCollection.find(query).skip(page * size).limit(size).toArray()
+            } else {
+                result = await blogsCollection.find(query).toArray()
+            }
+            res.json({ count, result })
         })
         // get single blog
         app.get('/blogs/:id', async (req, res) => {
@@ -48,7 +55,7 @@ async function run() {
             res.json(result)
         })
 
-        // update orders status
+        // update blog status
         app.put('/updateStatus/:id', async (req, res) => {
             const id = req.params.id
             const result = await blogsCollection.updateOne({ _id: ObjectId(id) }, {
@@ -68,13 +75,13 @@ async function run() {
             res.json(result);
         })
 
-        // delete product from db
+        // delete blog from db
         app.delete('/delete/:id', async (req, res) => {
             const result = await blogsCollection.deleteOne({ _id: ObjectId(req.params.id) })
             res.json(result)
         })
 
-        // get single email ordered product
+        // get single email posted blog
         app.get('/myBlogs', async (req, res) => {
             const email = req.query.email
             const query = { email: email }
