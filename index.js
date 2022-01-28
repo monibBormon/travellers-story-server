@@ -55,6 +55,19 @@ async function run() {
             res.json(result)
         })
 
+        // update blog 
+        app.put('/update/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedInfo = req.body;
+            const result = await blogsCollection.updateOne({ _id: ObjectId(id) }, {
+                $set: {
+                    title: updatedInfo.title,
+                    body: updatedInfo.body,
+                }
+            })
+            res.json(result)
+        })
+
         // update blog status
         app.put('/updateStatus/:id', async (req, res) => {
             const id = req.params.id
